@@ -1,1 +1,15 @@
+# starter
 
+name = "zkita-ai"
+main = "worker/index.js"
+compatibility_date = "2024-01-01"
+
+# worker routes
+routes = [
+  { pattern = "api.zkita.ai/*", zone_name = "zkita.ai" }
+]
+
+# env variables
+[vars]
+MODEL = "mistral-small-latest"
+TEMPERATURE = "0.7"
