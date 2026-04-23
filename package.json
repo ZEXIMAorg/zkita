@@ -1,0 +1,17 @@
+{
+  "name": "zkita-ai-worker",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev"
+  },
+  "dependencies": {
+    "@hono/firebase-auth": "^1.4.2",
+    "firebase-auth-cloudflare-workers": "^2.0.6",
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "wrangler": "^3.87.0"
+  }
+}
