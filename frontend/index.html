@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>ZKita AI · Open Source Assistant</title>
+  <title>Zkita AI · by xkitz7</title>
+  <!-- highlight.js for code highlighting -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/css/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -16,6 +19,7 @@
       --bg: #faf0ff;
       --surface: rgba(255, 245, 255, 0.68);
       --surface-solid: #fff0fe;
+      --sidebar-bg: rgba(245, 235, 255, 0.85);
       --text: #1a0b1e;
       --text-secondary: #4a2f55;
       --accent: #edc7ff;
@@ -24,8 +28,6 @@
       --shadow: 0 8px 20px rgba(0,0,0,0.05);
       --user-msg-bg: #e9d5ff;
       --assistant-msg-bg: #ffffffcc;
-      --spoiler-bg: #1a1a2e;
-      --spoiler-text: #1a1a2e;
       --code-bg: #f0e6ff;
       --scrollbar: #d9c7f0;
     }
@@ -34,6 +36,7 @@
       --bg: #09000d;
       --surface: rgba(18, 8, 25, 0.75);
       --surface-solid: #120a1a;
+      --sidebar-bg: rgba(18, 8, 30, 0.9);
       --text: #f0e6ff;
       --text-secondary: #cbb2e6;
       --accent: #d780ff;
@@ -42,41 +45,105 @@
       --shadow: 0 8px 20px rgba(0,0,0,0.4);
       --user-msg-bg: #2e1a47;
       --assistant-msg-bg: #1e102ccc;
-      --spoiler-bg: #2a2a3a;
-      --spoiler-text: #2a2a3a;
       --code-bg: #231c2c;
       --scrollbar: #3c2a4a;
     }
 
     body {
       background-color: var(--bg);
-      backdrop-filter: blur(0px);
-      font-family: system-ui, 'Segoe UI', 'Inter', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+      font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;
       color: var(--text);
       height: 100vh;
       display: flex;
-      flex-direction: column;
       transition: background 0.2s ease;
     }
 
-    /* frosted glass main panel */
-    .app {
-      max-width: 1100px;
-      margin: 16px auto;
-      width: calc(100% - 32px);
+    /* SIDEBAR */
+    .sidebar {
+      width: 280px;
+      background: var(--sidebar-bg);
+      backdrop-filter: blur(20px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      gap: 24px;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+
+    .new-chat-btn {
+      background: var(--accent);
+      border: none;
+      padding: 12px;
+      border-radius: 32px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #1a0b1e;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .new-chat-btn:hover {
+      background: var(--accent-hover);
+      transform: scale(0.98);
+    }
+
+    .history-section {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .history-group h4 {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .history-item {
+      padding: 8px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: 0.1s;
+      color: var(--text);
+    }
+    .history-item:hover {
+      background: var(--accent);
+      color: #1a0b1e;
+    }
+    .history-item.active {
+      background: var(--accent);
+      color: #1a0b1e;
+      font-weight: 500;
+    }
+
+    /* MAIN CHAT AREA */
+    .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       background: var(--surface);
       backdrop-filter: blur(20px);
+      margin: 16px 16px 16px 0;
       border-radius: 32px;
       box-shadow: var(--shadow);
       border: 1px solid var(--border);
       overflow: hidden;
-      height: calc(100% - 32px);
     }
 
-    /* header with frosted effect */
     .header {
       display: flex;
       justify-content: space-between;
@@ -84,201 +151,133 @@
       padding: 16px 24px;
       background: var(--surface-solid);
       border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(4px);
     }
-
     .logo h1 {
-      font-size: 1.7rem;
-      font-weight: 600;
+      font-size: 1.5rem;
+      font-weight: 700;
       background: linear-gradient(135deg, var(--accent), #b77dff);
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
       letter-spacing: -0.3px;
     }
-
     .logo p {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       color: var(--text-secondary);
+      margin-top: 2px;
     }
-
     .actions {
       display: flex;
       gap: 12px;
-      align-items: center;
     }
-
     .icon-btn {
       background: transparent;
       border: none;
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       cursor: pointer;
       color: var(--text-secondary);
-      transition: 0.2s;
-      border-radius: 40px;
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
     .icon-btn:hover {
       background: var(--accent);
       color: #1a0b1e;
     }
 
-    /* chat container */
     .chat-container {
       flex: 1;
       overflow-y: auto;
-      padding: 24px 20px;
+      padding: 20px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
-      scroll-behavior: smooth;
+      gap: 16px;
     }
 
-    /* message bubbles */
     .message {
       display: flex;
       flex-direction: column;
       max-width: 85%;
-      animation: fadeIn 0.2s ease-out;
+      animation: fadeIn 0.2s ease;
     }
-
-    .message.user {
-      align-self: flex-end;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-    }
+    .message.user { align-self: flex-end; }
+    .message.assistant { align-self: flex-start; }
 
     .bubble {
-      padding: 12px 18px;
-      border-radius: 26px;
+      padding: 10px 16px;
+      border-radius: 22px;
       line-height: 1.5;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
+      background: var(--assistant-msg-bg);
+      border: 1px solid var(--border);
       word-wrap: break-word;
       white-space: pre-wrap;
-      background: var(--assistant-msg-bg);
-      backdrop-filter: blur(4px);
-      border: 1px solid var(--border);
     }
-
     .user .bubble {
       background: var(--user-msg-bg);
-      color: var(--text);
       border-bottom-right-radius: 6px;
     }
-
     .assistant .bubble {
       border-bottom-left-radius: 6px;
     }
 
-    /* markdown styles */
+    /* code blocks */
+    .bubble pre {
+      margin: 8px 0;
+      border-radius: 12px;
+      overflow-x: auto;
+    }
     .bubble code {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+    }
+    .inline-code {
       background: var(--code-bg);
       padding: 2px 6px;
-      border-radius: 12px;
-      font-family: 'Fira Code', 'JetBrains Mono', monospace;
-      font-size: 0.85rem;
+      border-radius: 10px;
+      font-family: monospace;
     }
 
-    .bubble pre {
-      background: var(--code-bg);
-      padding: 10px;
-      border-radius: 16px;
-      overflow-x: auto;
-      margin: 8px 0;
-    }
-
-    .bubble strong {
-      font-weight: 700;
-    }
-
-    .bubble em {
-      font-style: italic;
-    }
-
-    .bubble strong em, .bubble em strong {
-      font-weight: 700;
-      font-style: italic;
-    }
-
-    /* spoiler */
-    .spoiler {
-      background: var(--spoiler-bg);
-      color: var(--spoiler-text);
-      cursor: pointer;
-      border-radius: 12px;
-      padding: 0 4px;
-      transition: 0.1s;
-      user-select: none;
-    }
-    .spoiler.revealed {
-      background: transparent;
-      color: inherit;
-    }
-
-    /* input area */
     .input-area {
       padding: 16px 20px 24px;
       background: var(--surface-solid);
       border-top: 1px solid var(--border);
-      backdrop-filter: blur(8px);
     }
-
     .input-wrapper {
       display: flex;
       gap: 12px;
-      align-items: flex-end;
       background: var(--bg);
       border-radius: 40px;
       padding: 6px 12px;
       border: 1px solid var(--border);
     }
-
     textarea {
       flex: 1;
       background: transparent;
       border: none;
-      padding: 12px 8px;
-      font-size: 0.95rem;
+      padding: 10px 8px;
+      font-size: 0.9rem;
       font-family: inherit;
       resize: none;
       outline: none;
       color: var(--text);
-      max-height: 160px;
     }
-
     button.send-btn {
       background: var(--accent);
       border: none;
       border-radius: 40px;
-      padding: 10px 18px;
+      padding: 8px 18px;
       font-weight: 600;
-      color: #1a0b1e;
       cursor: pointer;
-      transition: 0.2s;
-      font-size: 0.9rem;
     }
 
-    button.send-btn:hover {
-      background: var(--accent-hover);
-      transform: scale(1.02);
-    }
-
-    .clear-btn {
-      background: rgba(0,0,0,0.05);
-    }
-
-    /* loading dots */
     .typing {
       display: flex;
       gap: 6px;
-      padding: 8px 12px;
+      padding: 6px 10px;
     }
     .typing span {
       width: 8px;
@@ -287,59 +286,140 @@
       border-radius: 50%;
       animation: pulse 1.2s infinite;
     }
-    .typing span:nth-child(2) { animation-delay: 0.2s; }
-    .typing span:nth-child(3) { animation-delay: 0.4s; }
     @keyframes pulse {
-      0%, 60%, 100% { opacity: 0.4; transform: scale(0.8);}
+      0%, 60%, 100% { opacity: 0.3; transform: scale(0.8);}
       30% { opacity: 1; transform: scale(1);}
     }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px);}
       to { opacity: 1; transform: translateY(0);}
     }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: var(--scrollbar);
-      border-radius: 8px;
-    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
   </style>
 </head>
 <body>
-<div class="app">
+<div class="sidebar">
+  <button class="new-chat-btn" id="newChatBtn">➕ New Chat</button>
+  <div class="history-section" id="historySidebar"></div>
+</div>
+
+<div class="main">
   <div class="header">
     <div class="logo">
-      <h1>⚡ ZKita AI</h1>
-      <p>open source · from Tabuk</p>
+      <h1>Zkita AI</h1>
+      <p>by xkitz7</p>
     </div>
     <div class="actions">
-      <button class="icon-btn" id="themeToggle" aria-label="Dark/Light mode">🌓</button>
-      <button class="icon-btn" id="clearHistoryBtn" aria-label="Clear chat history">🗑️</button>
+      <button class="icon-btn" id="themeToggle">🌓</button>
     </div>
   </div>
 
-  <div class="chat-container" id="chatContainer">
-    <!-- messages will appear here -->
-    <div class="message assistant">
-      <div class="bubble">Hello! I'm ZKita AI. How can I help you today? ✨</div>
-    </div>
-  </div>
+  <div class="chat-container" id="chatContainer"></div>
 
   <div class="input-area">
     <div class="input-wrapper">
-      <textarea id="messageInput" placeholder="Ask me anything... use `code`, *italic*, **bold**, ***bold italic***, ||spoiler||" rows="1"></textarea>
+      <textarea id="messageInput" placeholder="Ask me anything!" rows="1"></textarea>
       <button class="send-btn" id="sendBtn">Send</button>
     </div>
   </div>
 </div>
 
 <script>
-  // ---------------- markdown parser (supports `, *, **, ***, ||spoiler||) ----------------
+  // ---------- data model ----------
+  let conversations = {};   // { chatId: { title, messages, createdAt } }
+  let currentChatId = null;
+  let isLoading = false;
+  const STORAGE_KEY = 'zkita_chats';
+
+  // helper: generate ID
+  function generateId() {
+    return Date.now() + '-' + Math.random().toString(36).substr(2, 6);
+  }
+
+  // get today, yesterday, week, month categories
+  function getCategory(timestamp) {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const yesterdayStart = todayStart - 86400000;
+    const weekAgoStart = todayStart - 7 * 86400000;
+    const monthAgoStart = todayStart - 30 * 86400000;
+    if (timestamp >= todayStart) return 'Today';
+    if (timestamp >= yesterdayStart) return 'Yesterday';
+    if (timestamp >= weekAgoStart) return 'A week ago';
+    if (timestamp >= monthAgoStart) return 'A month ago';
+    return 'Older';
+  }
+
+  // load from localStorage
+  function loadChats() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      conversations = JSON.parse(stored);
+    } else {
+      // create a default chat with NO initial message
+      const defaultId = generateId();
+      conversations = {
+        [defaultId]: {
+          id: defaultId,
+          title: 'New Chat',
+          messages: [],
+          createdAt: Date.now(),
+          updatedAt: Date.now()
+        }
+      };
+    }
+    if (Object.keys(conversations).length === 0) {
+      const newId = generateId();
+      conversations[newId] = {
+        id: newId,
+        title: 'New Chat',
+        messages: [],
+        createdAt: Date.now(),
+        updatedAt: Date.now()
+      };
+    }
+    saveChats();
+  }
+
+  function saveChats() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
+  }
+
+  // render sidebar with categories
+  function renderSidebar() {
+    const container = document.getElementById('historySidebar');
+    if (!container) return;
+    const chatsArray = Object.values(conversations).sort((a,b) => b.updatedAt - a.updatedAt);
+    const grouped = { 'Today': [], 'Yesterday': [], 'A week ago': [], 'A month ago': [], 'Older': [] };
+    for (const chat of chatsArray) {
+      const cat = getCategory(chat.updatedAt);
+      grouped[cat].push(chat);
+    }
+    let html = '';
+    for (const cat of ['Today', 'Yesterday', 'A week ago', 'A month ago', 'Older']) {
+      if (grouped[cat].length === 0) continue;
+      html += `<div class="history-group"><h4>${cat}</h4><div class="history-list">`;
+      for (const chat of grouped[cat]) {
+        const activeClass = currentChatId === chat.id ? 'active' : '';
+        html += `<div class="history-item ${activeClass}" data-id="${chat.id}">${escapeHtml(chat.title)}</div>`;
+      }
+      html += `</div></div>`;
+    }
+    container.innerHTML = html;
+
+    // attach click handlers
+    document.querySelectorAll('.history-item').forEach(el => {
+      el.addEventListener('click', () => {
+        const id = el.getAttribute('data-id');
+        if (id && conversations[id]) {
+          switchChat(id);
+        }
+      });
+    });
+  }
+
   function escapeHtml(str) {
     return str.replace(/[&<>]/g, function(m) {
       if (m === '&') return '&amp;';
@@ -349,187 +429,155 @@
     });
   }
 
-  function parseMarkdown(text) {
-    // escape html first
-    let parsed = escapeHtml(text);
-
-    // inline code `code`
-    parsed = parsed.replace(/`([^`]+)`/g, '<code>$1</code>');
-
-    // spoiler: ||hidden|| -> <span class="spoiler">hidden</span>
-    parsed = parsed.replace(/\|\|(.*?)\|\|/g, (match, content) => {
-      return `<span class="spoiler">${content}</span>`;
-    });
-
-    // bold+italic ***
-    parsed = parsed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-    // bold **
-    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-    // italic *
-    parsed = parsed.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-    // line break handling
-    parsed = parsed.replace(/\n/g, '<br>');
-    return parsed;
-  }
-
-  // convert spoiler spans to interactive (reveal on click)
-  function attachSpoilerListeners(container) {
-    const spoilers = container.querySelectorAll('.spoiler');
-    spoilers.forEach(sp => {
-      if (sp.getAttribute('data-listener')) return;
-      sp.setAttribute('data-listener', 'true');
-      sp.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sp.classList.add('revealed');
-      });
-    });
-  }
-
-  // ---------- chat state ----------
-  let chatHistory = [];     // array of {role, content}
-  const STORAGE_KEY = 'zkita_chat_history';
-  const API_ENDPOINT = '/api/chat';
-  let isLoading = false;
-
-  // load from localStorage
-  function loadHistory() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        chatHistory = JSON.parse(stored);
-      } catch(e) { chatHistory = []; }
-    }
-    if (!chatHistory.length) {
-      // seed with a welcome message (assistant)
-      chatHistory = [
-        { role: 'assistant', content: 'Hello! I\'m ZKita AI. How can I help you today? ✨' }
-      ];
-    }
-  }
-
-  function saveHistory() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory));
-  }
-
-  // render chat from chatHistory array
-  function renderChat() {
+  // render current chat messages with code highlighting
+  function renderMessages() {
     const container = document.getElementById('chatContainer');
-    if (!container) return;
-    // keep scroll position later
-    const wasScrolledToBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 30;
-
+    if (!container || !currentChatId || !conversations[currentChatId]) return;
+    const msgs = conversations[currentChatId].messages;
     container.innerHTML = '';
-    for (const msg of chatHistory) {
+    for (const msg of msgs) {
       const div = document.createElement('div');
       div.className = `message ${msg.role}`;
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-      // parse markdown content
-      const parsedHtml = parseMarkdown(msg.content);
-      bubble.innerHTML = parsedHtml;
+      bubble.innerHTML = formatMessage(msg.content);
       div.appendChild(bubble);
       container.appendChild(div);
     }
-    // attach spoiler click handlers
-    attachSpoilerListeners(container);
-    if (wasScrolledToBottom) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }
-
-  // add new message to history and re-render
-  function addMessage(role, content) {
-    chatHistory.push({ role, content });
-    saveHistory();
-    renderChat();
-  }
-
-  // call API
-  async function sendMessageToAPI(userMessage) {
-    // build messages array (without system prompt, worker already adds system)
-    const apiMessages = chatHistory.map(m => ({ role: m.role, content: m.content }));
-    // but we remove the last assistant message that might have been added by previous call? we already added user message before sending.
-    // Better: before calling, the user message is already added to chatHistory.
-    // So apiMessages includes the user message just added.
-    const response = await fetch(API_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ messages: apiMessages })
+    // highlight code blocks
+    document.querySelectorAll('.bubble pre code').forEach((block) => {
+      hljs.highlightElement(block);
     });
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`API error ${response.status}: ${errorText}`);
-    }
-    const data = await response.json();
-    return data.reply;
+    container.scrollTop = container.scrollHeight;
   }
 
-  // typing indicator
-  function showTypingIndicator() {
+  // markdown + code block detection
+  function formatMessage(text) {
+    let parsed = escapeHtml(text);
+    // code blocks ```language ... ```
+    parsed = parsed.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
+      return `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`;
+    });
+    // inline code `code`
+    parsed = parsed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    // bold, italic, etc
+    parsed = parsed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    parsed = parsed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // spoiler
+    parsed = parsed.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler" onclick="this.classList.add(\'revealed\')" style="background:#1a1a2e; color:#1a1a2e; cursor:pointer; border-radius:8px;">$1</span>');
+    parsed = parsed.replace(/\n/g, '<br>');
+    return parsed;
+  }
+
+  async function sendMessage() {
+    if (isLoading) return;
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+
+    // add user message
+    const userMsg = { role: 'user', content: text };
+    conversations[currentChatId].messages.push(userMsg);
+    conversations[currentChatId].updatedAt = Date.now();
+    // update title if first user message
+    if (conversations[currentChatId].messages.length === 1 && conversations[currentChatId].title === 'New Chat') {
+      let newTitle = text.slice(0, 30);
+      if (newTitle.length < text.length) newTitle += '...';
+      conversations[currentChatId].title = newTitle;
+    }
+    saveChats();
+    renderMessages();
+    renderSidebar();
+
+    // call API
+    isLoading = true;
+    const apiMessages = conversations[currentChatId].messages.map(m => ({ role: m.role, content: m.content }));
+    showTyping();
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages })
+      });
+      const data = await response.json();
+      removeTyping();
+      const assistantReply = data.reply || "Sorry, I couldn't process that.";
+      const assistantMsg = { role: 'assistant', content: assistantReply };
+      conversations[currentChatId].messages.push(assistantMsg);
+      conversations[currentChatId].updatedAt = Date.now();
+      saveChats();
+      renderMessages();
+      renderSidebar();
+    } catch (err) {
+      removeTyping();
+      const errorMsg = { role: 'assistant', content: `⚠️ Error: ${err.message}` };
+      conversations[currentChatId].messages.push(errorMsg);
+      saveChats();
+      renderMessages();
+    } finally {
+      isLoading = false;
+      document.getElementById('sendBtn').disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  }
+
+  function showTyping() {
     const container = document.getElementById('chatContainer');
     const typingDiv = document.createElement('div');
-    typingDiv.className = 'message assistant typing-indicator';
+    typingDiv.className = 'message assistant';
     typingDiv.id = 'typingIndicator';
     typingDiv.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
     container.appendChild(typingDiv);
     container.scrollTop = container.scrollHeight;
   }
-
-  function removeTypingIndicator() {
+  function removeTyping() {
     const el = document.getElementById('typingIndicator');
     if (el) el.remove();
   }
 
-  async function handleSend() {
-    if (isLoading) return;
-    const inputEl = document.getElementById('messageInput');
-    const message = inputEl.value.trim();
-    if (!message) return;
-
-    // disable input during request
-    isLoading = true;
-    inputEl.disabled = true;
-    document.getElementById('sendBtn').disabled = true;
-
-    // add user message to UI and history
-    addMessage('user', message);
-    inputEl.value = '';
-    // auto resize back
-    inputEl.style.height = 'auto';
-
-    // show typing indicator
-    showTypingIndicator();
-
-    try {
-      const reply = await sendMessageToAPI(message);
-      removeTypingIndicator();
-      addMessage('assistant', reply);
-    } catch (err) {
-      removeTypingIndicator();
-      console.error(err);
-      addMessage('assistant', `⚠️ I'm having trouble connecting. Please try again later. (${err.message})`);
-    } finally {
-      isLoading = false;
-      inputEl.disabled = false;
-      document.getElementById('sendBtn').disabled = false;
-      inputEl.focus();
-    }
+  function newChat() {
+    const newId = generateId();
+    const now = Date.now();
+    conversations[newId] = {
+      id: newId,
+      title: 'New Chat',
+      messages: [],  // Empty messages array - no "Ask me anything!"
+      createdAt: now,
+      updatedAt: now
+    };
+    saveChats();
+    switchChat(newId);
   }
 
-  // clear history
-  function clearHistory() {
-    if (confirm('Delete all conversation history?')) {
-      chatHistory = [];
-      saveHistory();
-      // add fresh welcome
-      chatHistory = [{ role: 'assistant', content: 'Hello! I\'m ZKita AI. How can I help you today? ✨' }];
-      saveHistory();
-      renderChat();
-    }
+  function switchChat(chatId) {
+    if (!conversations[chatId]) return;
+    currentChatId = chatId;
+    renderMessages();
+    renderSidebar();
   }
 
-  // ---------- THEME (light/dark) with custom accent ----------
+  function deleteCurrentChat() {
+    if (!currentChatId) return;
+    if (Object.keys(conversations).length === 1) {
+      newChat();
+      delete conversations[currentChatId];
+      currentChatId = Object.keys(conversations)[0];
+    } else {
+      const next = Object.keys(conversations).find(id => id !== currentChatId);
+      delete conversations[currentChatId];
+      currentChatId = next;
+    }
+    saveChats();
+    renderSidebar();
+    renderMessages();
+  }
+
+  // theme
   function setTheme(theme) {
     if (theme === 'dark') {
       document.body.classList.add('dark');
@@ -539,47 +587,43 @@
       localStorage.setItem('zkita_theme', 'light');
     }
   }
-
   function toggleTheme() {
     const isDark = document.body.classList.contains('dark');
     setTheme(isDark ? 'light' : 'dark');
   }
-
   function initTheme() {
     const saved = localStorage.getItem('zkita_theme');
     if (saved === 'dark') setTheme('dark');
-    else setTheme('light');  // default light
+    else setTheme('light');
   }
 
-  // auto-resize textarea
   function autoResizeTextarea() {
-    const textarea = document.getElementById('messageInput');
-    textarea.style.height = 'auto';
-    textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+    const ta = document.getElementById('messageInput');
+    ta.style.height = 'auto';
+    ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
   }
 
-  // event binding
   document.addEventListener('DOMContentLoaded', () => {
-    loadHistory();
-    renderChat();
+    loadChats();
+    const firstId = Object.keys(conversations)[0];
+    currentChatId = firstId;
     initTheme();
-    const sendBtn = document.getElementById('sendBtn');
+    renderMessages();
+    renderSidebar();
+
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('newChatBtn').addEventListener('click', newChat);
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
     const inputField = document.getElementById('messageInput');
-    const clearBtn = document.getElementById('clearHistoryBtn');
-    const themeToggleBtn = document.getElementById('themeToggle');
-
-    sendBtn.addEventListener('click', handleSend);
-    clearBtn.addEventListener('click', clearHistory);
-    themeToggleBtn.addEventListener('click', toggleTheme);
-
     inputField.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        handleSend();
+        sendMessage();
       }
     });
     inputField.addEventListener('input', autoResizeTextarea);
     inputField.focus();
+    window.addEventListener('beforeunload', () => saveChats());
   });
 </script>
 </body>
