@@ -4,25 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Zkita AI · by xkitz7</title>
-
-  <!-- highlight.js for code highlighting -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/css/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-
-  <!-- Firebase v11 modular SDK -->
-  <script type="importmap">
-    {
-      "imports": {
-        "firebase/app": "https://www.gstatic.com/firebasejs/11.6.0/firebase-app.js",
-        "firebase/auth": "https://www.gstatic.com/firebasejs/11.6.0/firebase-auth.js",
-        "firebase/firestore": "https://www.gstatic.com/firebasejs/11.6.0/firebase-firestore.js"
-      }
-    }
-  </script>
-
   <style>
-    /* Your existing CSS stays exactly the same – no changes needed */
+    /* existing styles plus new ones for buttons and modal */
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
       --bg: #faf0ff;
       --surface: rgba(255, 245, 255, 0.68);
@@ -103,7 +90,7 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
 
-    /* Modern code modal */
+    /* modern code modal */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
     .modal-content { background: #0f0f0f; color: #f8e8ff; border-radius: 28px; width: 90%; max-width: 1000px; height: 80%; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px black; border: 1px solid #2a2a2a; }
     .modal-header { padding: 16px 20px; border-bottom: 1px solid #2a2a2a; display: flex; justify-content: space-between; align-items: center; }
@@ -116,339 +103,370 @@
     .modal-footer { padding: 12px 20px; border-top: 1px solid #2a2a2a; display: flex; justify-content: flex-end; gap: 12px; }
     .modal-footer button { background: #2a2a2a; border: none; color: #f8e8ff; padding: 6px 16px; border-radius: 24px; cursor: pointer; }
     .modal-footer button.primary { background: #d780ff; color: #0f0f0f; }
-
-    /* Auth styles */
-    .auth-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-    .btn-signin { background: var(--accent); border: none; padding: 14px 28px; border-radius: 40px; font-size: 1.1rem; font-weight: 600; cursor: pointer; margin-top: 20px; }
-    .user-info { display: flex; align-items: center; gap: 12px; }
-    .user-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; }
-    .btn-logout { background: transparent; border: 1px solid var(--border); border-radius: 20px; padding: 4px 12px; font-size: 0.7rem; cursor: pointer; }
   </style>
 </head>
 <body>
-  <!-- Firebase Auth will show login UI here -->
-  <div id="app"></div>
+<div class="sidebar">
+  <button class="new-chat-btn" id="newChatBtn">➕ New Chat</button>
+  <div class="history-section" id="historySidebar"></div>
+</div>
 
-  <div id="codeModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header"><h3>⚡ Test Code</h3><button class="modal-close" id="closeModalBtn">&times;</button></div>
-      <div class="modal-body">
-        <div class="code-panel" id="modalCodePanel"></div>
-        <div class="preview-panel"><iframe id="previewIframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div>
-      </div>
-      <div class="modal-footer"><button id="copyCodeBtn">Copy Code</button><button id="runCodeBtn" class="primary">Run ▶</button></div>
+<div class="main">
+  <div class="header">
+    <div class="logo"><h1>Zkita AI</h1><p>by xkitz7</p></div>
+    <div class="actions">
+      <button class="icon-btn" id="reloadBtn" title="Regenerate last response">⟳</button>
+      <button class="icon-btn" id="themeToggle">🌓</button>
     </div>
   </div>
+  <div class="chat-container" id="chatContainer"></div>
+  <div class="input-area">
+    <div class="input-wrapper">
+      <textarea id="messageInput" placeholder="Ask me anything!" rows="1"></textarea>
+      <button class="send-btn" id="sendBtn">Send</button>
+    </div>
+  </div>
+</div>
 
-  <script type="module">
-    import { initializeApp } from "firebase/app";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "firebase/auth";
-    import { getFirestore, doc, setDoc, getDoc, collection, getDocs, query, orderBy, updateDoc, deleteDoc, onSnapshot } from "firebase/firestore";
+<!-- Modal for code testing -->
+<div id="codeModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header"><h3>⚡ Test Code</h3><button class="modal-close" id="closeModalBtn">&times;</button></div>
+    <div class="modal-body">
+      <div class="code-panel" id="modalCodePanel"></div>
+      <div class="preview-panel"><iframe id="previewIframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe></div>
+    </div>
+    <div class="modal-footer"><button id="copyCodeBtn">Copy Code</button><button id="runCodeBtn" class="primary">Run ▶</button></div>
+  </div>
+</div>
 
-    // Your Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAZErULMhmJrOe11TxRrHJ15O2nRXSbgtk",
-      authDomain: "zkita-ai.firebaseapp.com",
-      projectId: "zkita-ai",
-      storageBucket: "zkita-ai.firebasestorage.app",
-      messagingSenderId: "145026100540",
-      appId: "1:145026100540:web:c0ada0a2316a694165c239",
-      measurementId: "G-3XY9S0ESDY"
-    };
+<script>
+  // ---------- data model (same as before) ----------
+  let conversations = {};
+  let currentChatId = null;
+  let isLoading = false;
+  const STORAGE_KEY = 'zkita_chats';
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-    const provider = new GoogleAuthProvider();
+  function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
+  function getCategory(timestamp) {
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const yesterdayStart = todayStart - 86400000;
+    const weekAgoStart = todayStart - 7 * 86400000;
+    const monthAgoStart = todayStart - 30 * 86400000;
+    if (timestamp >= todayStart) return 'Today';
+    if (timestamp >= yesterdayStart) return 'Yesterday';
+    if (timestamp >= weekAgoStart) return 'A week ago';
+    if (timestamp >= monthAgoStart) return 'A month ago';
+    return 'Older';
+  }
 
-    // UI State
-    let currentUserId = null;
-    let currentChatId = null;
-    let unsubscribeChat = null;
-
-    const appContainer = document.getElementById('app');
-    let currentTheme = localStorage.getItem('zkita_theme') === 'dark' ? 'dark' : 'light';
-
-    function setTheme(theme) {
-      if (theme === 'dark') {
-        document.body.classList.add('dark');
-        localStorage.setItem('zkita_theme', 'dark');
-      } else {
-        document.body.classList.remove('dark');
-        localStorage.setItem('zkita_theme', 'light');
-      }
-      currentTheme = theme;
+  function loadChats() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) conversations = JSON.parse(stored);
+    else {
+      const defaultId = generateId();
+      conversations = { [defaultId]: { id: defaultId, title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() } };
     }
+    if (Object.keys(conversations).length === 0) {
+      const newId = generateId();
+      conversations[newId] = { id: newId, title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
+    }
+    saveChats();
+  }
+  function saveChats() { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); }
 
-    const modal = {
-      open: (code) => {
-        currentTestCode = code;
-        const modalEl = document.getElementById('codeModal');
-        const codePanel = document.getElementById('modalCodePanel');
-        codePanel.innerHTML = `<pre style="margin:0; font-family:monospace; white-space:pre-wrap;">${escapeHtml(code)}</pre>`;
-        document.getElementById('previewIframe').srcdoc = '<html><body style="background:white;display:flex;align-items:center;justify-content:center;font-family:sans-serif;">Click "Run" to preview</body></html>';
-        modalEl.style.display = 'flex';
-      },
-      close: () => { document.getElementById('codeModal').style.display = 'none'; }
-    };
-    window.openCodeModal = modal.open;
-    document.getElementById('closeModalBtn')?.addEventListener('click', () => modal.close());
-    document.getElementById('runCodeBtn')?.addEventListener('click', () => {
-      document.getElementById('previewIframe').srcdoc = currentTestCode;
+  function renderSidebar() {
+    const container = document.getElementById('historySidebar');
+    if (!container) return;
+    const chatsArray = Object.values(conversations).sort((a,b) => b.updatedAt - a.updatedAt);
+    const grouped = { 'Today': [], 'Yesterday': [], 'A week ago': [], 'A month ago': [], 'Older': [] };
+    for (const chat of chatsArray) grouped[getCategory(chat.updatedAt)].push(chat);
+    let html = '';
+    for (const cat of ['Today', 'Yesterday', 'A week ago', 'A month ago', 'Older']) {
+      if (grouped[cat].length === 0) continue;
+      html += `<div class="history-group"><h4>${cat}</h4><div class="history-list">`;
+      for (const chat of grouped[cat]) {
+        const activeClass = currentChatId === chat.id ? 'active' : '';
+        html += `<div class="history-item ${activeClass}" data-id="${chat.id}">${escapeHtml(chat.title)}</div>`;
+      }
+      html += `</div></div>`;
+    }
+    container.innerHTML = html;
+    document.querySelectorAll('.history-item').forEach(el => {
+      el.addEventListener('click', () => { const id = el.getAttribute('data-id'); if(id && conversations[id]) switchChat(id); });
     });
-    document.getElementById('copyCodeBtn')?.addEventListener('click', () => {
-      navigator.clipboard.writeText(currentTestCode);
-      alert('Code copied');
-    });
-    let currentTestCode = '';
+  }
 
-    // Helper functions
-    function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
-    function getCategory(timestamp) {
-      const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-      const yesterdayStart = todayStart - 86400000;
-      const weekAgoStart = todayStart - 7 * 86400000;
-      const monthAgoStart = todayStart - 30 * 86400000;
-      if (timestamp >= todayStart) return 'Today';
-      if (timestamp >= yesterdayStart) return 'Yesterday';
-      if (timestamp >= weekAgoStart) return 'A week ago';
-      if (timestamp >= monthAgoStart) return 'A month ago';
-      return 'Older';
-    }
-    function escapeHtml(str) { return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
+  function escapeHtml(str) { return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
 
-    function formatMessage(text) {
-      let parsed = escapeHtml(text);
-      parsed = parsed.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`);
-      parsed = parsed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-      parsed = parsed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
-      parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-      parsed = parsed.replace(/\*(.*?)\*/g, '<em>$1</em>');
-      parsed = parsed.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler" onclick="this.classList.add(\'revealed\')" style="background:#1a1a2e; color:#1a1a2e; cursor:pointer; border-radius:8px;">$1</span>');
-      parsed = parsed.replace(/\n/g, '<br>');
-      return parsed;
-    }
+  function formatMessage(text) {
+    let parsed = escapeHtml(text);
+    parsed = parsed.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`);
+    parsed = parsed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
+    parsed = parsed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
+    parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    parsed = parsed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    parsed = parsed.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler" onclick="this.classList.add(\'revealed\')" style="background:#1a1a2e; color:#1a1a2e; cursor:pointer; border-radius:8px;">$1</span>');
+    parsed = parsed.replace(/\n/g, '<br>');
+    return parsed;
+  }
 
-    function extractCodeBlocks(text) {
-      const regex = /```(\w*)\n([\s\S]*?)```/g;
-      const blocks = [];
-      let match;
-      while ((match = regex.exec(text)) !== null) blocks.push({ lang: match[1], code: match[2] });
-      return blocks;
-    }
+  function extractCodeBlocks(text) {
+    const regex = /```(\w*)\n([\s\S]*?)```/g;
+    const blocks = [];
+    let match;
+    while ((match = regex.exec(text)) !== null) blocks.push({ lang: match[1], code: match[2] });
+    return blocks;
+  }
 
-    // Firestore operations
-    async function loadUserChats(userId) {
-      const chatsRef = collection(db, `users/${userId}/chats`);
-      const q = query(chatsRef, orderBy('updatedAt', 'desc'));
-      const snapshot = await getDocs(q);
-      const chats = {};
-      snapshot.forEach(doc => {
-        chats[doc.id] = { id: doc.id, ...doc.data() };
-      });
-      return chats;
-    }
+  // global test modal logic
+  let currentTestCode = '';
+  function openCodeModal(code) {
+    currentTestCode = code;
+    const modal = document.getElementById('codeModal');
+    const codePanel = document.getElementById('modalCodePanel');
+    codePanel.innerHTML = `<pre style="margin:0; font-family:monospace; white-space:pre-wrap;">${escapeHtml(code)}</pre>`;
+    document.getElementById('previewIframe').srcdoc = '<html><body style="background:white;display:flex;align-items:center;justify-content:center;font-family:sans-serif;">Click "Run" to preview</body></html>';
+    modal.style.display = 'flex';
+  }
+  document.getElementById('closeModalBtn').onclick = () => document.getElementById('codeModal').style.display = 'none';
+  document.getElementById('runCodeBtn').onclick = () => {
+    const iframe = document.getElementById('previewIframe');
+    iframe.srcdoc = currentTestCode;
+  };
+  document.getElementById('copyCodeBtn').onclick = () => {
+    navigator.clipboard.writeText(currentTestCode);
+    alert('Code copied to clipboard');
+  };
+  window.onclick = (e) => { if(e.target === document.getElementById('codeModal')) document.getElementById('codeModal').style.display = 'none'; };
 
-    async function saveChatToFirestore(userId, chatId, chatData) {
-      const chatRef = doc(db, `users/${userId}/chats`, chatId);
-      await setDoc(chatRef, chatData);
-    }
+  // render messages with buttons
+  function renderMessages() {
+    const container = document.getElementById('chatContainer');
+    if (!container || !currentChatId || !conversations[currentChatId]) return;
+    const msgs = conversations[currentChatId].messages;
+    container.innerHTML = '';
+    msgs.forEach((msg, idx) => {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${msg.role}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = formatMessage(msg.content);
+      msgDiv.appendChild(bubble);
+      // buttons container
+      const btnDiv = document.createElement('div');
+      btnDiv.className = 'message-buttons';
+      const hasCode = extractCodeBlocks(msg.content).length > 0;
 
-    async function switchChat(userId, chatId) {
-      if (unsubscribeChat) unsubscribeChat();
-      const chatRef = doc(db, `users/${userId}/chats`, chatId);
-      unsubscribeChat = onSnapshot(chatRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const chatData = docSnap.data();
-          renderMessages(chatData.messages || []);
-          renderSidebar(userId);
-        }
-      });
-      currentChatId = chatId;
-    }
+      // copy button
+      const copyBtn = document.createElement('button');
+      copyBtn.innerText = 'Copy';
+      copyBtn.className = 'msg-btn';
+      copyBtn.onclick = () => { navigator.clipboard.writeText(msg.content); alert('Copied!'); };
+      btnDiv.appendChild(copyBtn);
 
-    // UI Rendering
-    function renderMessages(messages) {
-      const container = document.getElementById('chatContainer');
-      if (!container) return;
-      container.innerHTML = '';
-      messages.forEach((msg, idx) => {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${msg.role}`;
-        const bubble = document.createElement('div');
-        bubble.className = 'bubble';
-        bubble.innerHTML = formatMessage(msg.content);
-        msgDiv.appendChild(bubble);
-        const btnDiv = document.createElement('div');
-        btnDiv.className = 'message-buttons';
-        const copyBtn = document.createElement('button');
-        copyBtn.innerText = 'Copy';
-        copyBtn.className = 'msg-btn';
-        copyBtn.onclick = () => { navigator.clipboard.writeText(msg.content); alert('Copied!'); };
-        btnDiv.appendChild(copyBtn);
-        const downBtn = document.createElement('button');
-        downBtn.innerText = 'Download';
-        downBtn.className = 'msg-btn';
-        downBtn.onclick = () => {
-          const blob = new Blob([msg.content], {type: 'text/plain'});
-          const a = document.createElement('a');
-          const url = URL.createObjectURL(blob);
-          a.href = url;
-          a.download = 'ZKITA.txt';
-          a.click();
-          URL.revokeObjectURL(url);
-        };
-        btnDiv.appendChild(downBtn);
-        if (msg.role === 'assistant') {
-          if (extractCodeBlocks(msg.content).length) {
-            const testBtn = document.createElement('button');
-            testBtn.innerText = 'Test';
-            testBtn.className = 'msg-btn';
-            testBtn.onclick = () => {
-              const blocks = extractCodeBlocks(msg.content);
-              if (blocks.length) modal.open(blocks[0].code);
-              else alert('No code block found');
-            };
-            btnDiv.appendChild(testBtn);
-          }
-        } else if (msg.role === 'user') {
-          const editBtn = document.createElement('button');
-          editBtn.innerText = 'Edit';
-          editBtn.className = 'msg-btn';
-          editBtn.onclick = () => startEditMessage(idx, msg.content);
-          btnDiv.appendChild(editBtn);
-        }
-        msgDiv.appendChild(btnDiv);
-        container.appendChild(msgDiv);
-      });
-      document.querySelectorAll('.bubble pre code').forEach(block => hljs.highlightElement(block));
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function startEditMessage(msgIndex, originalText) {
-      // Implementation – same as before but adapted for Firestore
-      const container = document.getElementById('chatContainer');
-      const messages = document.querySelectorAll('.message');
-      if (!messages[msgIndex]) return;
-      const msgDiv = messages[msgIndex];
-      const bubble = msgDiv.querySelector('.bubble');
-      const btnDiv = msgDiv.querySelector('.message-buttons');
-      const editDiv = document.createElement('div');
-      editDiv.className = 'edit-area';
-      editDiv.innerHTML = `<textarea class="edit-textarea" rows="3">${escapeHtml(originalText)}</textarea><div class="edit-actions"><button id="cancelEdit">Cancel</button><button id="finishEdit">Finish</button></div>`;
-      bubble.style.display = 'none';
-      btnDiv.style.display = 'none';
-      msgDiv.appendChild(editDiv);
-      const textarea = editDiv.querySelector('textarea');
-      const cancelBtn = editDiv.querySelector('#cancelEdit');
-      const finishBtn = editDiv.querySelector('#finishEdit');
-      cancelBtn.onclick = () => {
-        editDiv.remove();
-        bubble.style.display = '';
-        btnDiv.style.display = '';
+      // download button
+      const downBtn = document.createElement('button');
+      downBtn.innerText = 'Download';
+      downBtn.className = 'msg-btn';
+      downBtn.onclick = () => {
+        const blob = new Blob([msg.content], {type: 'text/plain'});
+        const a = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = 'ZKITA.txt';
+        a.click();
+        URL.revokeObjectURL(url);
       };
-      finishBtn.onclick = async () => {
-        const newText = textarea.value.trim();
-        if (!newText) return;
-        const chatRef = doc(db, `users/${currentUserId}/chats`, currentChatId);
-        const chatDoc = await getDoc(chatRef);
-        const messages = chatDoc.data().messages || [];
-        const updatedMessages = messages.slice(0, msgIndex);
-        updatedMessages.push({ role: 'user', content: newText });
-        await updateDoc(chatRef, { messages: updatedMessages, updatedAt: Date.now() });
-        await regenerateLastResponse(userId);
-      };
-    }
+      btnDiv.appendChild(downBtn);
 
-    async function regenerateLastResponse(userId) {
-      // Similar implementation to original but using Firestore
-      // Calls API and updates Firestore
-    }
-
-    async function sendMessage(userId, chatId, text) {
-      // Implementation similar to original but saves to Firestore and calls API
-    }
-
-    async function renderSidebar(userId) {
-      const container = document.getElementById('historySidebar');
-      if (!container) return;
-      const chats = await loadUserChats(userId);
-      const chatsArray = Object.values(chats).sort((a,b) => b.updatedAt - a.updatedAt);
-      const grouped = { 'Today': [], 'Yesterday': [], 'A week ago': [], 'A month ago': [], 'Older': [] };
-      for (const chat of chatsArray) {
-        grouped[getCategory(chat.updatedAt)].push(chat);
-      }
-      let html = '';
-      for (const cat of ['Today', 'Yesterday', 'A week ago', 'A month ago', 'Older']) {
-        if (grouped[cat].length === 0) continue;
-        html += `<div class="history-group"><h4>${cat}</h4><div class="history-list">`;
-        for (const chat of grouped[cat]) {
-          const activeClass = currentChatId === chat.id ? 'active' : '';
-          html += `<div class="history-item ${activeClass}" data-id="${chat.id}">${escapeHtml(chat.title)}</div>`;
-        }
-        html += `</div></div>`;
-      }
-      container.innerHTML = html;
-      document.querySelectorAll('.history-item').forEach(el => {
-        el.addEventListener('click', () => {
-          const id = el.getAttribute('data-id');
-          if (id) switchChat(userId, id);
-        });
-      });
-    }
-
-    function renderLoggedInUI(user) {
-      currentUserId = user.uid;
-      renderSidebar(user.uid);
-      // Rest of UI rendering...
-    }
-
-    // Auth state handling
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        // User signed in
-        currentUserId = user.uid;
-        const userChats = await loadUserChats(user.uid);
-        if (Object.keys(userChats).length === 0) {
-          const newChatId = generateId();
-          const newChat = {
-            id: newChatId,
-            title: 'New Chat',
-            messages: [],
-            createdAt: Date.now(),
-            updatedAt: Date.now()
+      if (msg.role === 'assistant') {
+        if (hasCode) {
+          const testBtn = document.createElement('button');
+          testBtn.innerText = 'Test';
+          testBtn.className = 'msg-btn';
+          testBtn.onclick = () => {
+            const blocks = extractCodeBlocks(msg.content);
+            if (blocks.length) openCodeModal(blocks[0].code);
+            else alert('No code block found');
           };
-          await saveChatToFirestore(user.uid, newChatId, newChat);
-          currentChatId = newChatId;
-        } else {
-          currentChatId = Object.keys(userChats)[0];
+          btnDiv.appendChild(testBtn);
         }
-        await renderLoggedInUI(user);
-      } else {
-        // User signed out
-        currentUserId = null;
-        currentChatId = null;
-        renderLoginUI();
+      } else if (msg.role === 'user') {
+        const editBtn = document.createElement('button');
+        editBtn.innerText = 'Edit';
+        editBtn.className = 'msg-btn';
+        editBtn.onclick = () => startEditMessage(idx, msg.content);
+        btnDiv.appendChild(editBtn);
       }
+      msgDiv.appendChild(btnDiv);
+      container.appendChild(msgDiv);
     });
+    document.querySelectorAll('.bubble pre code').forEach(block => hljs.highlightElement(block));
+    container.scrollTop = container.scrollHeight;
+  }
 
-    function renderLoginUI() {
-      let html = `
-        <div class="auth-container">
-          <div class="logo"><h1>Zkita AI</h1><p>by xkitz7</p></div>
-          <button class="btn-signin" id="signinBtn">Sign in with Google</button>
-        </div>
-      `;
-      appContainer.innerHTML = html;
-      document.getElementById('signinBtn')?.addEventListener('click', () => {
-        signInWithPopup(auth, provider);
-      });
+  // edit logic
+  function startEditMessage(msgIndex, originalText) {
+    const container = document.getElementById('chatContainer');
+    const messages = document.querySelectorAll('.message');
+    if (!messages[msgIndex]) return;
+    const msgDiv = messages[msgIndex];
+    const bubble = msgDiv.querySelector('.bubble');
+    const btnDiv = msgDiv.querySelector('.message-buttons');
+    const originalHTML = bubble.innerHTML;
+    const editDiv = document.createElement('div');
+    editDiv.className = 'edit-area';
+    editDiv.innerHTML = `<textarea class="edit-textarea" rows="3">${escapeHtml(originalText)}</textarea><div class="edit-actions"><button id="cancelEdit">Cancel</button><button id="finishEdit">Finish</button></div>`;
+    bubble.style.display = 'none';
+    btnDiv.style.display = 'none';
+    msgDiv.appendChild(editDiv);
+    const textarea = editDiv.querySelector('textarea');
+    const cancelBtn = editDiv.querySelector('#cancelEdit');
+    const finishBtn = editDiv.querySelector('#finishEdit');
+    cancelBtn.onclick = () => {
+      editDiv.remove();
+      bubble.style.display = '';
+      btnDiv.style.display = '';
+    };
+    finishBtn.onclick = async () => {
+      const newText = textarea.value.trim();
+      if (!newText) return;
+      // truncate messages after this user message
+      const chat = conversations[currentChatId];
+      chat.messages = chat.messages.slice(0, msgIndex);
+      chat.messages.push({ role: 'user', content: newText });
+      chat.updatedAt = Date.now();
+      if (chat.title === 'New Chat') chat.title = newText.slice(0,30)+(newText.length>30?'...':'');
+      saveChats();
+      renderMessages();
+      renderSidebar();
+      // regenerate AI response
+      await regenerateLastResponse();
+    };
+  }
+
+  async function regenerateLastResponse() {
+    if (isLoading) return;
+    const chat = conversations[currentChatId];
+    const userMessages = chat.messages.filter(m => m.role === 'user');
+    if (userMessages.length === 0) return;
+    // remove the last assistant message if exists
+    if (chat.messages.length && chat.messages[chat.messages.length-1].role === 'assistant') {
+      chat.messages.pop();
     }
+    saveChats();
+    renderMessages();
+    // trigger API call with last user message
+    const lastUserMsg = chat.messages[chat.messages.length-1];
+    if (!lastUserMsg || lastUserMsg.role !== 'user') return;
+    isLoading = true;
+    showTyping();
+    try {
+      const apiMessages = chat.messages.map(m => ({ role: m.role, content: m.content }));
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages })
+      });
+      const data = await response.json();
+      removeTyping();
+      const reply = data.reply || "Sorry, no response.";
+      chat.messages.push({ role: 'assistant', content: reply });
+      chat.updatedAt = Date.now();
+      saveChats();
+      renderMessages();
+      renderSidebar();
+    } catch(err) {
+      removeTyping();
+      chat.messages.push({ role: 'assistant', content: `⚠️ Error: ${err.message}` });
+      saveChats();
+      renderMessages();
+    } finally { isLoading = false; }
+  }
 
-    // Initial load
-    setTheme(currentTheme);
-    renderLoginUI();
-  </script>
+  async function sendMessage() {
+    if (isLoading) return;
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    input.style.height = 'auto';
+    const chat = conversations[currentChatId];
+    chat.messages.push({ role: 'user', content: text });
+    chat.updatedAt = Date.now();
+    if (chat.title === 'New Chat') chat.title = text.slice(0,30)+(text.length>30?'...':'');
+    saveChats();
+    renderMessages();
+    renderSidebar();
+
+    isLoading = true;
+    const apiMessages = chat.messages.map(m => ({ role: m.role, content: m.content }));
+    showTyping();
+    try {
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: apiMessages }) });
+      const data = await response.json();
+      removeTyping();
+      const reply = data.reply || "Sorry, I couldn't process that.";
+      chat.messages.push({ role: 'assistant', content: reply });
+      chat.updatedAt = Date.now();
+      saveChats();
+      renderMessages();
+      renderSidebar();
+    } catch(err) {
+      removeTyping();
+      chat.messages.push({ role: 'assistant', content: `⚠️ Error: ${err.message}` });
+      saveChats();
+      renderMessages();
+    } finally { isLoading = false; }
+  }
+
+  function showTyping() {
+    const container = document.getElementById('chatContainer');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'message assistant';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
+    container.appendChild(typingDiv);
+    container.scrollTop = container.scrollHeight;
+  }
+  function removeTyping() { const el = document.getElementById('typingIndicator'); if(el) el.remove(); }
+
+  function newChat() {
+    const newId = generateId();
+    conversations[newId] = { id: newId, title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
+    saveChats();
+    switchChat(newId);
+  }
+  function switchChat(chatId) {
+    if (!conversations[chatId]) return;
+    currentChatId = chatId;
+    renderMessages();
+    renderSidebar();
+  }
+  function setTheme(theme) {
+    if (theme === 'dark') { document.body.classList.add('dark'); localStorage.setItem('zkita_theme', 'dark'); }
+    else { document.body.classList.remove('dark'); localStorage.setItem('zkita_theme', 'light'); }
+  }
+  function toggleTheme() { setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'); }
+  function initTheme() { const saved = localStorage.getItem('zkita_theme'); setTheme(saved === 'dark' ? 'dark' : 'light'); }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    loadChats();
+    currentChatId = Object.keys(conversations)[0];
+    initTheme();
+    renderMessages();
+    renderSidebar();
+    document.getElementById('sendBtn').addEventListener('click', sendMessage);
+    document.getElementById('newChatBtn').addEventListener('click', newChat);
+    document.getElementById('reloadBtn').addEventListener('click', () => regenerateLastResponse());
+    document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+    const inputField = document.getElementById('messageInput');
+    inputField.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+    inputField.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = Math.min(this.scrollHeight, 150) + 'px'; });
+    inputField.focus();
+  });
+</script>
 </body>
 </html>
