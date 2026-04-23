@@ -8,11 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/css/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     /* LIGHT theme (default) */
     :root {
@@ -49,251 +45,59 @@
       --scrollbar: #3c2a4a;
     }
 
-    body {
-      background-color: var(--bg);
-      font-family: system-ui, 'Segoe UI', 'Inter', sans-serif;
-      color: var(--text);
-      height: 100vh;
-      display: flex;
-      transition: background 0.2s ease;
-    }
+    body { background-color: var(--bg); font-family: system-ui, 'Segoe UI', 'Inter', sans-serif; color: var(--text); height: 100vh; display: flex; transition: background 0.2s ease; }
 
     /* SIDEBAR */
-    .sidebar {
-      width: 280px;
-      background: var(--sidebar-bg);
-      backdrop-filter: blur(20px);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      padding: 20px 16px;
-      gap: 24px;
-      overflow-y: auto;
-      flex-shrink: 0;
-    }
-
-    .new-chat-btn {
-      background: var(--accent);
-      border: none;
-      padding: 12px;
-      border-radius: 32px;
-      font-weight: 600;
-      font-size: 1rem;
-      color: #1a0b1e;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      transition: 0.2s;
-    }
-    .new-chat-btn:hover {
-      background: var(--accent-hover);
-      transform: scale(0.98);
-    }
-
-    .history-section {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-    .history-group h4 {
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-secondary);
-      margin-bottom: 10px;
-    }
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .history-item {
-      padding: 8px 12px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      transition: 0.1s;
-      color: var(--text);
-    }
-    .history-item:hover {
-      background: var(--accent);
-      color: #1a0b1e;
-    }
-    .history-item.active {
-      background: var(--accent);
-      color: #1a0b1e;
-      font-weight: 500;
-    }
+    .sidebar { width: 280px; background: var(--sidebar-bg); backdrop-filter: blur(20px); border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 20px 16px; gap: 24px; overflow-y: auto; flex-shrink: 0; }
+    .new-chat-btn { background: var(--accent); border: none; padding: 12px; border-radius: 32px; font-weight: 600; font-size: 1rem; color: #1a0b1e; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.2s; }
+    .new-chat-btn:hover { background: var(--accent-hover); transform: scale(0.98); }
+    .history-section { display: flex; flex-direction: column; gap: 20px; }
+    .history-group h4 { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 10px; }
+    .history-list { display: flex; flex-direction: column; gap: 6px; }
+    .history-item { padding: 8px 12px; border-radius: 20px; cursor: pointer; font-size: 0.85rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: 0.1s; color: var(--text); }
+    .history-item:hover, .history-item.active { background: var(--accent); color: #1a0b1e; font-weight: 500; }
 
     /* MAIN CHAT AREA */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--surface);
-      backdrop-filter: blur(20px);
-      margin: 16px 16px 16px 0;
-      border-radius: 32px;
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
+    .main { flex: 1; display: flex; flex-direction: column; background: var(--surface); backdrop-filter: blur(20px); margin: 16px 16px 16px 0; border-radius: 32px; box-shadow: var(--shadow); border: 1px solid var(--border); overflow: hidden; }
+    .header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--surface-solid); border-bottom: 1px solid var(--border); }
+    .logo h1 { font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--accent), #b77dff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .logo p { font-size: 0.7rem; color: var(--text-secondary); margin-top: 2px; }
+    .actions { display: flex; gap: 12px; }
+    .icon-btn { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; color: var(--text-secondary); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { background: var(--accent); color: #1a0b1e; }
 
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      background: var(--surface-solid);
-      border-bottom: 1px solid var(--border);
-    }
-    .logo h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--accent), #b77dff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.3px;
-    }
-    .logo p {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-    .actions {
-      display: flex;
-      gap: 12px;
-    }
-    .icon-btn {
-      background: transparent;
-      border: none;
-      font-size: 1.3rem;
-      cursor: pointer;
-      color: var(--text-secondary);
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .icon-btn:hover {
-      background: var(--accent);
-      color: #1a0b1e;
-    }
-
-    .chat-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .message {
-      display: flex;
-      flex-direction: column;
-      max-width: 85%;
-      animation: fadeIn 0.2s ease;
-    }
+    .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+    .message { display: flex; flex-direction: column; max-width: 85%; animation: fadeIn 0.2s ease; position: relative; }
     .message.user { align-self: flex-end; }
-    .message.assistant { align-self: flex-start; }
+    .message.assistant { align-self: flex-start; width: 100%; max-width: 100%; }
 
-    .bubble {
-      padding: 10px 16px;
-      border-radius: 22px;
-      line-height: 1.5;
-      font-size: 0.9rem;
-      background: var(--assistant-msg-bg);
-      border: 1px solid var(--border);
-      word-wrap: break-word;
-      white-space: pre-wrap;
-    }
-    .user .bubble {
-      background: var(--user-msg-bg);
-      border-bottom-right-radius: 6px;
-    }
-    .assistant .bubble {
-      border-bottom-left-radius: 6px;
-    }
+    .bubble { padding: 10px 16px; border-radius: 22px; line-height: 1.5; font-size: 0.9rem; background: var(--assistant-msg-bg); border: 1px solid var(--border); word-wrap: break-word; white-space: pre-wrap; position: relative; }
+    .user .bubble { background: var(--user-msg-bg); border-bottom-right-radius: 6px; }
+    .assistant .bubble { border-bottom-left-radius: 6px; }
 
-    /* code blocks */
-    .bubble pre {
-      margin: 8px 0;
-      border-radius: 12px;
-      overflow-x: auto;
-    }
-    .bubble code {
-      font-family: 'Fira Code', monospace;
-      font-size: 0.8rem;
-    }
-    .inline-code {
-      background: var(--code-bg);
-      padding: 2px 6px;
-      border-radius: 10px;
-      font-family: monospace;
-    }
+    /* Action Bar */
+    .message-actions { position: absolute; top: -28px; right: 0; display: flex; gap: 8px; background: var(--surface-solid); padding: 4px 8px; border-radius: 20px; backdrop-filter: blur(8px); border: 1px solid var(--border); opacity: 0; transition: opacity 0.2s; z-index: 10; }
+    .message:hover .message-actions { opacity: 1; }
+    .action-btn { background: transparent; border: none; font-size: 0.8rem; cursor: pointer; padding: 4px 8px; border-radius: 16px; color: var(--text-secondary); font-weight: 500; transition: 0.1s; }
+    .action-btn:hover { background: var(--accent); color: #1a0b1e; }
+    .run-btn { font-weight: bold; background: var(--accent); color: #1a0b1e; }
 
-    .input-area {
-      padding: 16px 20px 24px;
-      background: var(--surface-solid);
-      border-top: 1px solid var(--border);
-    }
-    .input-wrapper {
-      display: flex;
-      gap: 12px;
-      background: var(--bg);
-      border-radius: 40px;
-      padding: 6px 12px;
-      border: 1px solid var(--border);
-    }
-    textarea {
-      flex: 1;
-      background: transparent;
-      border: none;
-      padding: 10px 8px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      resize: none;
-      outline: none;
-      color: var(--text);
-    }
-    button.send-btn {
-      background: var(--accent);
-      border: none;
-      border-radius: 40px;
-      padding: 8px 18px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    /* Modal (Widget Preview) */
+    .widget-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; }
+    .widget-modal.active { visibility: visible; opacity: 1; }
+    .widget-container { background: var(--surface-solid); border-radius: 24px; width: 80vw; height: 80vh; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 1px solid var(--border); resize: both; min-width: 400px; min-height: 300px; position: relative; }
+    .widget-header { padding: 12px 16px; background: var(--accent); color: #1a0b1e; display: flex; justify-content: space-between; align-items: center; cursor: move; user-select: none; }
+    .widget-header h3 { font-size: 1rem; }
+    .widget-header button { background: transparent; border: none; font-size: 1.2rem; cursor: pointer; padding: 0 6px; }
+    .widget-iframe { flex: 1; width: 100%; border: none; background: white; }
+    .resize-handle { position: absolute; bottom: 0; right: 0; width: 20px; height: 20px; cursor: nw-resize; background: var(--accent); border-radius: 12px 0 0 0; }
 
-    .typing {
-      display: flex;
-      gap: 6px;
-      padding: 6px 10px;
-    }
-    .typing span {
-      width: 8px;
-      height: 8px;
-      background: var(--text-secondary);
-      border-radius: 50%;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0%, 60%, 100% { opacity: 0.3; transform: scale(0.8);}
-      30% { opacity: 1; transform: scale(1);}
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(6px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
+    .inline-code { background: var(--code-bg); padding: 2px 6px; border-radius: 10px; font-family: monospace; }
+    .bubble pre { margin: 8px 0; border-radius: 12px; overflow-x: auto; }
+    .typing { display: flex; gap: 6px; padding: 6px 10px; }
+    .typing span { width: 8px; height: 8px; background: var(--text-secondary); border-radius: 50%; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0%, 60%, 100% { opacity: 0.3; transform: scale(0.8);} 30% { opacity: 1; transform: scale(1);} }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px);} to { opacity: 1; transform: translateY(0);} }
     ::-webkit-scrollbar { width: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
@@ -307,38 +111,37 @@
 
 <div class="main">
   <div class="header">
-    <div class="logo">
-      <h1>Zkita AI</h1>
-      <p>by xkitz7</p>
-    </div>
-    <div class="actions">
-      <button class="icon-btn" id="themeToggle">🌓</button>
-    </div>
+    <div class="logo"><h1>Zkita AI</h1><p>by xkitz7</p></div>
+    <div class="actions"><button class="icon-btn" id="themeToggle">🌓</button></div>
   </div>
-
   <div class="chat-container" id="chatContainer"></div>
-
   <div class="input-area">
     <div class="input-wrapper">
-      <textarea id="messageInput" placeholder="Ask me anything!" rows="1"></textarea>
+      <textarea id="messageInput" placeholder="Ask me anything! (Try: 'Create a blue button that says click me')" rows="1"></textarea>
       <button class="send-btn" id="sendBtn">Send</button>
     </div>
   </div>
 </div>
 
+<!-- Modal for widget preview -->
+<div id="widgetModal" class="widget-modal">
+  <div class="widget-container" id="widgetContainer">
+    <div class="widget-header" id="widgetHeader">
+      <h3>🪄 Live Widget Preview</h3>
+      <div><button id="fullscreenWidget">⤢</button><button id="closeWidget">✕</button></div>
+    </div>
+    <iframe id="widgetFrame" class="widget-iframe" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals"></iframe>
+    <div class="resize-handle"></div>
+  </div>
+</div>
+
 <script>
-  // ---------- data model ----------
-  let conversations = {};   // { chatId: { title, messages, createdAt } }
+  let conversations = {};
   let currentChatId = null;
   let isLoading = false;
   const STORAGE_KEY = 'zkita_chats';
 
-  // helper: generate ID
-  function generateId() {
-    return Date.now() + '-' + Math.random().toString(36).substr(2, 6);
-  }
-
-  // get today, yesterday, week, month categories
+  function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 6); }
   function getCategory(timestamp) {
     const now = new Date();
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
@@ -352,278 +155,171 @@
     return 'Older';
   }
 
-  // load from localStorage
   function loadChats() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      conversations = JSON.parse(stored);
-    } else {
-      // create a default chat with NO initial message
-      const defaultId = generateId();
-      conversations = {
-        [defaultId]: {
-          id: defaultId,
-          title: 'New Chat',
-          messages: [],
-          createdAt: Date.now(),
-          updatedAt: Date.now()
-        }
-      };
-    }
-    if (Object.keys(conversations).length === 0) {
-      const newId = generateId();
-      conversations[newId] = {
-        id: newId,
-        title: 'New Chat',
-        messages: [],
-        createdAt: Date.now(),
-        updatedAt: Date.now()
-      };
-    }
+    if (stored) conversations = JSON.parse(stored);
+    else conversations = { [generateId()]: { id: generateId(), title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() } };
+    if (Object.keys(conversations).length === 0) conversations[generateId()] = { id: generateId(), title: 'New Chat', messages: [], createdAt: Date.now(), updatedAt: Date.now() };
     saveChats();
   }
+  function saveChats() { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); }
 
-  function saveChats() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations));
-  }
-
-  // render sidebar with categories
   function renderSidebar() {
     const container = document.getElementById('historySidebar');
     if (!container) return;
     const chatsArray = Object.values(conversations).sort((a,b) => b.updatedAt - a.updatedAt);
     const grouped = { 'Today': [], 'Yesterday': [], 'A week ago': [], 'A month ago': [], 'Older': [] };
-    for (const chat of chatsArray) {
-      const cat = getCategory(chat.updatedAt);
-      grouped[cat].push(chat);
-    }
+    for (const chat of chatsArray) grouped[getCategory(chat.updatedAt)].push(chat);
     let html = '';
     for (const cat of ['Today', 'Yesterday', 'A week ago', 'A month ago', 'Older']) {
       if (grouped[cat].length === 0) continue;
       html += `<div class="history-group"><h4>${cat}</h4><div class="history-list">`;
-      for (const chat of grouped[cat]) {
-        const activeClass = currentChatId === chat.id ? 'active' : '';
-        html += `<div class="history-item ${activeClass}" data-id="${chat.id}">${escapeHtml(chat.title)}</div>`;
-      }
+      for (const chat of grouped[cat]) html += `<div class="history-item ${currentChatId === chat.id ? 'active' : ''}" data-id="${chat.id}">${escapeHtml(chat.title)}</div>`;
       html += `</div></div>`;
     }
     container.innerHTML = html;
-
-    // attach click handlers
-    document.querySelectorAll('.history-item').forEach(el => {
-      el.addEventListener('click', () => {
-        const id = el.getAttribute('data-id');
-        if (id && conversations[id]) {
-          switchChat(id);
-        }
-      });
-    });
+    document.querySelectorAll('.history-item').forEach(el => el.addEventListener('click', () => { const id = el.getAttribute('data-id'); if(id && conversations[id]) switchChat(id); }));
   }
 
-  function escapeHtml(str) {
-    return str.replace(/[&<>]/g, function(m) {
-      if (m === '&') return '&amp;';
-      if (m === '<') return '&lt;';
-      if (m === '>') return '&gt;';
-      return m;
-    });
+  function escapeHtml(str) { return str.replace(/[&<>]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;' }[m])); }
+
+  function extractCodeBlocks(text) {
+    const regex = /```(\w*)\n([\s\S]*?)```/g;
+    const blocks = [];
+    let match;
+    while ((match = regex.exec(text)) !== null) blocks.push({ lang: match[1], code: match[2] });
+    return blocks;
   }
 
-  // render current chat messages with code highlighting
-  function renderMessages() {
-    const container = document.getElementById('chatContainer');
-    if (!container || !currentChatId || !conversations[currentChatId]) return;
-    const msgs = conversations[currentChatId].messages;
-    container.innerHTML = '';
-    for (const msg of msgs) {
-      const div = document.createElement('div');
-      div.className = `message ${msg.role}`;
-      const bubble = document.createElement('div');
-      bubble.className = 'bubble';
-      bubble.innerHTML = formatMessage(msg.content);
-      div.appendChild(bubble);
-      container.appendChild(div);
-    }
-    // highlight code blocks
-    document.querySelectorAll('.bubble pre code').forEach((block) => {
-      hljs.highlightElement(block);
-    });
-    container.scrollTop = container.scrollHeight;
-  }
-
-  // markdown + code block detection
   function formatMessage(text) {
     let parsed = escapeHtml(text);
-    // code blocks ```language ... ```
-    parsed = parsed.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => {
-      return `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`;
-    });
-    // inline code `code`
+    parsed = parsed.replace(/```(\w*)\n([\s\S]*?)```/g, (match, lang, code) => `<pre><code class="language-${lang || 'plaintext'}">${code}</code></pre>`);
     parsed = parsed.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
-    // bold, italic, etc
     parsed = parsed.replace(/\*\*\*(.*?)\*\*\*/g, '<strong><em>$1</em></strong>');
     parsed = parsed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     parsed = parsed.replace(/\*(.*?)\*/g, '<em>$1</em>');
-    // spoiler
     parsed = parsed.replace(/\|\|(.*?)\|\|/g, '<span class="spoiler" onclick="this.classList.add(\'revealed\')" style="background:#1a1a2e; color:#1a1a2e; cursor:pointer; border-radius:8px;">$1</span>');
     parsed = parsed.replace(/\n/g, '<br>');
     return parsed;
   }
+
+  function renderMessages() {
+    const container = document.getElementById('chatContainer');
+    if (!container || !currentChatId || !conversations[currentChatId]) return;
+    container.innerHTML = '';
+    for (const msg of conversations[currentChatId].messages) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${msg.role}`;
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.innerHTML = formatMessage(msg.content);
+      msgDiv.appendChild(bubble);
+
+      // Add action buttons for assistant messages with code blocks
+      if (msg.role === 'assistant') {
+        const codeBlocks = extractCodeBlocks(msg.content);
+        if (codeBlocks.length > 0) {
+          const actionBar = document.createElement('div');
+          actionBar.className = 'message-actions';
+          // Copy button
+          const copyBtn = document.createElement('button');
+          copyBtn.className = 'action-btn';
+          copyBtn.innerText = '📋 Copy';
+          copyBtn.onclick = (e) => { e.stopPropagation(); copyCodeBlocks(codeBlocks); };
+          // Run button (>)
+          const runBtn = document.createElement('button');
+          runBtn.className = 'action-btn run-btn';
+          runBtn.innerText = '>';
+          runBtn.style.fontWeight = 'bold';
+          runBtn.style.fontSize = '1.2rem';
+          runBtn.onclick = (e) => { e.stopPropagation(); runWidget(codeBlocks); };
+          // Reload button (resets widget iframe content)
+          const reloadBtn = document.createElement('button');
+          reloadBtn.className = 'action-btn';
+          reloadBtn.innerText = '🔄 Reload';
+          reloadBtn.onclick = (e) => { e.stopPropagation(); reloadWidget(); };
+          actionBar.appendChild(copyBtn);
+          actionBar.appendChild(runBtn);
+          actionBar.appendChild(reloadBtn);
+          msgDiv.style.position = 'relative';
+          msgDiv.appendChild(actionBar);
+        }
+      }
+      container.appendChild(msgDiv);
+    }
+    document.querySelectorAll('.bubble pre code').forEach(block => hljs.highlightElement(block));
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function copyCodeBlocks(blocks) { navigator.clipboard.writeText(blocks.map(b => b.code).join('\n\n')); alert('Code copied!'); }
+
+  let currentWidgetCode = '';
+  function runWidget(blocks) { if(blocks.length === 0) return; currentWidgetCode = blocks[0].code; openWidget(currentWidgetCode); }
+  function reloadWidget() { if(currentWidgetCode) openWidget(currentWidgetCode); }
+  function openWidget(code) {
+    const modal = document.getElementById('widgetModal');
+    const iframe = document.getElementById('widgetFrame');
+    const doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write(code);
+    doc.close();
+    modal.classList.add('active');
+  }
+  function closeWidget() { document.getElementById('widgetModal').classList.remove('active'); }
 
   async function sendMessage() {
     if (isLoading) return;
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
     if (!text) return;
-    input.value = '';
-    input.style.height = 'auto';
-
-    // add user message
+    input.value = ''; input.style.height = 'auto';
     const userMsg = { role: 'user', content: text };
     conversations[currentChatId].messages.push(userMsg);
     conversations[currentChatId].updatedAt = Date.now();
-    // update title if first user message
     if (conversations[currentChatId].messages.length === 1 && conversations[currentChatId].title === 'New Chat') {
       let newTitle = text.slice(0, 30);
       if (newTitle.length < text.length) newTitle += '...';
       conversations[currentChatId].title = newTitle;
     }
-    saveChats();
-    renderMessages();
-    renderSidebar();
-
-    // call API
+    saveChats(); renderMessages(); renderSidebar();
     isLoading = true;
     const apiMessages = conversations[currentChatId].messages.map(m => ({ role: m.role, content: m.content }));
     showTyping();
-
     try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: apiMessages })
-      });
+      const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: apiMessages }) });
       const data = await response.json();
       removeTyping();
       const assistantReply = data.reply || "Sorry, I couldn't process that.";
-      const assistantMsg = { role: 'assistant', content: assistantReply };
-      conversations[currentChatId].messages.push(assistantMsg);
+      conversations[currentChatId].messages.push({ role: 'assistant', content: assistantReply });
       conversations[currentChatId].updatedAt = Date.now();
-      saveChats();
-      renderMessages();
-      renderSidebar();
+      saveChats(); renderMessages(); renderSidebar();
     } catch (err) {
       removeTyping();
-      const errorMsg = { role: 'assistant', content: `⚠️ Error: ${err.message}` };
-      conversations[currentChatId].messages.push(errorMsg);
-      saveChats();
-      renderMessages();
-    } finally {
-      isLoading = false;
-      document.getElementById('sendBtn').disabled = false;
-      input.disabled = false;
-      input.focus();
-    }
+      conversations[currentChatId].messages.push({ role: 'assistant', content: `⚠️ Error: ${err.message}` });
+      saveChats(); renderMessages();
+    } finally { isLoading = false; document.getElementById('sendBtn').disabled = false; input.disabled = false; input.focus(); }
   }
 
-  function showTyping() {
-    const container = document.getElementById('chatContainer');
-    const typingDiv = document.createElement('div');
-    typingDiv.className = 'message assistant';
-    typingDiv.id = 'typingIndicator';
-    typingDiv.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`;
-    container.appendChild(typingDiv);
-    container.scrollTop = container.scrollHeight;
-  }
-  function removeTyping() {
-    const el = document.getElementById('typingIndicator');
-    if (el) el.remove();
-  }
+  function showTyping() { const container = document.getElementById('chatContainer'); const typingDiv = document.createElement('div'); typingDiv.className = 'message assistant'; typingDiv.id = 'typingIndicator'; typingDiv.innerHTML = `<div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div>`; container.appendChild(typingDiv); container.scrollTop = container.scrollHeight; }
+  function removeTyping() { const el = document.getElementById('typingIndicator'); if (el) el.remove(); }
+  function newChat() { const newId = generateId(); const now = Date.now(); conversations[newId] = { id: newId, title: 'New Chat', messages: [], createdAt: now, updatedAt: now }; saveChats(); switchChat(newId); }
+  function switchChat(chatId) { if (!conversations[chatId]) return; currentChatId = chatId; renderMessages(); renderSidebar(); }
 
-  function newChat() {
-    const newId = generateId();
-    const now = Date.now();
-    conversations[newId] = {
-      id: newId,
-      title: 'New Chat',
-      messages: [],  // Empty messages array - no "Ask me anything!"
-      createdAt: now,
-      updatedAt: now
-    };
-    saveChats();
-    switchChat(newId);
-  }
-
-  function switchChat(chatId) {
-    if (!conversations[chatId]) return;
-    currentChatId = chatId;
-    renderMessages();
-    renderSidebar();
-  }
-
-  function deleteCurrentChat() {
-    if (!currentChatId) return;
-    if (Object.keys(conversations).length === 1) {
-      newChat();
-      delete conversations[currentChatId];
-      currentChatId = Object.keys(conversations)[0];
-    } else {
-      const next = Object.keys(conversations).find(id => id !== currentChatId);
-      delete conversations[currentChatId];
-      currentChatId = next;
-    }
-    saveChats();
-    renderSidebar();
-    renderMessages();
-  }
-
-  // theme
-  function setTheme(theme) {
-    if (theme === 'dark') {
-      document.body.classList.add('dark');
-      localStorage.setItem('zkita_theme', 'dark');
-    } else {
-      document.body.classList.remove('dark');
-      localStorage.setItem('zkita_theme', 'light');
-    }
-  }
-  function toggleTheme() {
-    const isDark = document.body.classList.contains('dark');
-    setTheme(isDark ? 'light' : 'dark');
-  }
-  function initTheme() {
-    const saved = localStorage.getItem('zkita_theme');
-    if (saved === 'dark') setTheme('dark');
-    else setTheme('light');
-  }
-
-  function autoResizeTextarea() {
-    const ta = document.getElementById('messageInput');
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
-  }
+  function setTheme(theme) { if (theme === 'dark') document.body.classList.add('dark'); else document.body.classList.remove('dark'); localStorage.setItem('zkita_theme', theme); }
+  function toggleTheme() { setTheme(document.body.classList.contains('dark') ? 'light' : 'dark'); }
+  function initTheme() { setTheme(localStorage.getItem('zkita_theme') === 'dark' ? 'dark' : 'light'); }
+  function autoResizeTextarea() { const ta = document.getElementById('messageInput'); ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 150) + 'px'; }
 
   document.addEventListener('DOMContentLoaded', () => {
-    loadChats();
-    const firstId = Object.keys(conversations)[0];
-    currentChatId = firstId;
-    initTheme();
-    renderMessages();
-    renderSidebar();
-
+    loadChats(); currentChatId = Object.keys(conversations)[0]; initTheme(); renderMessages(); renderSidebar();
     document.getElementById('sendBtn').addEventListener('click', sendMessage);
     document.getElementById('newChatBtn').addEventListener('click', newChat);
     document.getElementById('themeToggle').addEventListener('click', toggleTheme);
-    const inputField = document.getElementById('messageInput');
-    inputField.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-    inputField.addEventListener('input', autoResizeTextarea);
-    inputField.focus();
-    window.addEventListener('beforeunload', () => saveChats());
+    document.getElementById('closeWidget').addEventListener('click', closeWidget);
+    document.getElementById('fullscreenWidget').addEventListener('click', () => { const iframe = document.getElementById('widgetFrame'); if (iframe.requestFullscreen) iframe.requestFullscreen(); });
+    document.getElementById('messageInput').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+    document.getElementById('messageInput').addEventListener('input', autoResizeTextarea);
+    document.getElementById('messageInput').focus();
   });
 </script>
 </body>
