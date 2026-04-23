@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZKita AI - Your Personal Assistant</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #0a0a0a; color: #fff; }
+        .chat { border: 1px solid #333; border-radius: 12px; padding: 20px; height: 400px; overflow-y: auto; margin-bottom: 20px; background: #111; }
+        .user { text-align: right; background: #2a6f2a; padding: 10px; border-radius: 12px; margin: 10px; }
+        .bot { text-align: left; background: #1a1a2e; padding: 10px; border-radius: 12px; margin: 10px; }
+        input { width: 80%; padding: 10px; border-radius: 8px; border: 1px solid #333; background: #222; color: #fff; }
+        button { padding: 10px 20px; background: #2a6f2a; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        button:hover { background: #3a8f3a; }
+        h1 { text-align: center; color: #6aef6a; }
+    </style>
+</head>
+<body>
+    <h1>🤖 ZKita AI</h1>
+    <div class="chat" id="chat">
+        <div class="bot">Hello! I'm ZKita AI. How can I help you today?</div>
+    </div>
+    <input type="text" id="userInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendMessage()">
+    <button onclick="sendMessage()">Send</button>
 
+    <script>
+        const chat = document.getElementById('chat');
+        const input = document.getElementById('userInput');
+
+        async function sendMessage() {
+            const message = input.value.trim();
+            if (!message) return;
+
+            // Show user message
+            chat.innerHTML += `<div class="user">${message}</div>`;
+            input.value = '';
+            chat.scrollTop = chat.scrollHeight;
+
+            // Show typing indicator
+            chat.innerHTML += `<div class="bot" id="typing">ZKita is typing...</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: message }]
+                    })
+                });
+                const data = await response.json();
+                
+                // Remove typing indicator
+                document.getElementById('typing')?.remove();
+                
+                // Show bot reply
+                chat.innerHTML += `<div class="bot">${data.reply}</div>`;
+                chat.scrollTop = chat.scrollHeight;
+            } catch (error) {
+                document.getElementById('typing')?.remove();
+                chat.innerHTML += `<div class="bot">Sorry, ZKita AI is having trouble. Try again!</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
