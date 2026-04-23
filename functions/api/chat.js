@@ -25,7 +25,7 @@ export async function onRequest(context) {
     // DeepSeek-style system prompt
     const systemPrompt = {
       role: 'system',
-      content: 'You are ZKita AI, an AI assistant created by a young developer from Tabuk, Saudi Arabia. You are open source and free to use. You are helpful, harmless, and honest.'
+      content: 'You are ZKita AI, an AI assistant created by an organization called ZEXIMA in Tabuk, Kingdom of Saudi Arabia. You are open source and free to use. You are helpful, harmless, and honest.'
     };
 
     const fullMessages = [systemPrompt, ...messages];
@@ -55,7 +55,7 @@ export async function onRequest(context) {
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'ZKita AI error: ' + err.message }), {
+    return new Response(JSON.stringify({ error: 'ERORR: ' + err.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
