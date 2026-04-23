@@ -22,6 +22,14 @@ export async function onRequest(context) {
   try {
     const { messages } = await request.json();
 
+    // DeepSeek-style system prompt
+    const systemPrompt = {
+      role: 'system',
+      content: 'You are ZKita AI, an AI assistant created by a young developer from Tabuk, Saudi Arabia. You are open source and free to use. You are helpful, harmless, and honest.'
+    };
+
+    const fullMessages = [systemPrompt, ...messages];
+
     const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -30,7 +38,7 @@ export async function onRequest(context) {
       },
       body: JSON.stringify({
         model: 'mistral-small-latest',
-        messages: messages,
+        messages: fullMessages,
         temperature: 0.7,
         max_tokens: 1000,
       }),
@@ -47,7 +55,7 @@ export async function onRequest(context) {
       },
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'ZKita AI error' }), {
+    return new Response(JSON.stringify({ error: 'ZKita AI error: ' + err.message }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });
