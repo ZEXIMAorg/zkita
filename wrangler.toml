@@ -1,15 +1,10 @@
-# wrangler.toml
 name = "zkita-ai-worker"
 main = "worker.js"
 compatibility_date = "2024-07-25"
 
 [vars]
-PROJECT_ID = "zkita-ai" # Use your actual Firebase Project ID
+PROJECT_ID = "zkita-ai"
 
-# Define your KV namespace for caching authentication keys
 [[kv_namespaces]]
 binding = "PUBLIC_JWK_CACHE_KV"
-id = "" # Leave empty for now, Wrangler will help create it
-
-# Define your secret environment variable
-[env]
+id = ""  # Will be filled after creation
