@@ -1,0 +1,89 @@
+ZKITA AI MODEL LICENSE AGREEMENT
+Version 1.0, April 2026
+Copyright (c) 2026 ZKita AI
+
+
+1. DEFINITIONS
+
+A. "Model" means the ZKita AI model, its weights, parameters, and any accompanying components used to generate outputs.
+
+B. "Derivatives" means any modifications, fine-tuned versions, distilled versions, or any model created using the Model's weights, parameters, activations, or outputs.
+
+C. "Distribution" means sharing the Model, hosting it as a service (API or web access), or providing it to any third party.
+
+D. "You" means the individual or entity using the Model.
+
+
+2. GRANT OF RIGHTS
+
+A. ZKita AI grants You a perpetual, worldwide, non-exclusive, royalty-free license to use, modify, reproduce, and distribute the Model and its Derivatives.
+
+B. You may host the Model as a service for third parties, including through APIs or web applications.
+
+C. You may add Your own copyright notice to modifications and release them under additional terms, provided the use-based restrictions below remain in effect.
+
+
+3. CONDITIONS AND OBLIGATIONS
+
+A. You must include this entire license agreement when distributing the Model or its Derivatives.
+
+B. Modified files must carry a prominent notice stating the nature of modifications.
+
+C. You must retain all original copyright, patent, and attribution notices from ZKita AI.
+
+D. The use-based restrictions in Section 4 apply to You and all Your users.
+
+
+4. USE-BASED RESTRICTIONS
+
+You may NOT use the Model or its Derivatives for:
+
+A. Any violation of national or international law.
+
+B. Any military purpose, weapon development, or deployment.
+
+C. Exploiting or harming minors in any way.
+
+D. Generating false information or content intended to harm others.
+
+E. Generating inappropriate content subject to regulatory requirements.
+
+F. Generating personal identifiable information without authorization.
+
+G. Defaming, disparaging, or harassing others.
+
+H. Fully automated decision making that impacts legal rights or creates binding obligations.
+
+I. Discriminating against individuals or groups based on social behavior, personality, or personal characteristics.
+
+J. Exploiting vulnerabilities of any group based on age, social status, physical or mental characteristics.
+
+K. Discriminating based on legally protected characteristics including race, religion, gender, or age.
+
+
+5. OUTPUT AND LIABILITY
+
+A. ZKita AI claims no rights in the Output You generate. You are solely accountable for all Output.
+
+B. The Model is provided AS IS without warranties of any kind, including merchantability or fitness for a particular purpose.
+
+C. ZKita AI is not liable for any damages arising from use of the Model or its Derivatives.
+
+D. Your use of the Model constitutes acceptance of all terms in this agreement.
+
+
+6. TERMINATION
+
+A. This license terminates automatically if You violate any use-based restriction in Section 4.
+
+B. Upon termination, You must immediately cease all use and distribution of the Model and its Derivatives.
+
+C. Patent licenses granted under this agreement terminate if You initiate patent litigation against ZKita AI.
+
+
+7. GOVERNING LAW
+
+7. GOVERNING LAW
+
+This agreement is governed by the laws of the Kingdom of Saudi Arabia. 
+Disputes shall be resolved exclusively in the courts of Tabuk, Saudi Arabia.
