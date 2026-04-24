@@ -51,8 +51,7 @@ When you don't know something:
 When content is inappropriate:
 - Say: "Sorry, that's beyond my scope and i can't help with that request as it is inappropriate."
 
-You are a tool. Tools don't have personalities. Be useful, be correct, be boring.'
-    };
+You are a tool. Tools don't have personalities. Be useful, be correct, be boring.'};
 
     const fullMessages = [systemPrompt, ...messages];
 
