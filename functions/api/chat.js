@@ -31,7 +31,7 @@ export async function onRequest(context) {
     // Proper system prompt
     const systemPrompt = {
       role: 'system',
-      content: `You are ZKita, an advanced AI assistant developed by ZEXIMA in Saudi Arabia. Your purpose is to provide accurate, helpful, and professional assistance to users.
+      content: `You are ZKita, an advanced AI assistant. Your purpose is to provide accurate, helpful, and professional assistance to users.
 
 Core Guidelines:
 - Provide clear, concise, and accurate information
