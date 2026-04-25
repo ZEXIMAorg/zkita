@@ -14,6 +14,10 @@
             color: #F9EBFF;
             overflow: hidden;
             height: 100vh;
+            transition: background-color 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        body.solid-bg {
+            background-color: #100D11;
         }
 
         ::selection {
@@ -54,11 +58,11 @@
             justify-content: center;
             padding: 0 40px;
             position: relative;
-            background-color: #0F0D11;
+            background-color: transparent;
             overflow: hidden;
         }
 
-        /* Chat messages container (added) */
+        /* Chat messages container */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
@@ -131,7 +135,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Aurora & other existing styles unchanged */
+        /* Aurora & other existing styles */
         .aurora-bg {
             position: absolute;
             top: 0;
@@ -142,6 +146,10 @@
             pointer-events: none;
             filter: blur(120px);
             opacity: 0.15;
+            transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+        body.solid-bg .aurora-bg {
+            opacity: 0;
         }
 
         .blob {
@@ -453,7 +461,6 @@
     let abortController = null;
     const STORAGE_KEY = 'zkita_neon_chats';
 
-    // Helper functions
     function generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 8); }
     function getTimestamp() { return new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}); }
 
@@ -475,7 +482,16 @@
     }
     function saveToLocal() { localStorage.setItem(STORAGE_KEY, JSON.stringify(conversations)); }
 
-    // Render sidebar (Pinned, Recent, search)
+    // Background transition to solid #100D11
+    function setSolidBackground(enable) {
+        if (enable) {
+            document.body.classList.add('solid-bg');
+        } else {
+            document.body.classList.remove('solid-bg');
+        }
+    }
+
+    // Render sidebar with search filter
     function renderSidebar() {
         const container = document.getElementById('historyContainer');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -525,7 +541,6 @@
 
     function escapeHtml(str) { return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':'&gt;'); }
     function attachHistoryEvents() {
-        // click on history item (select chat)
         document.querySelectorAll('.history-item').forEach(el => {
             const id = el.dataset.id;
             if (id) {
@@ -536,7 +551,6 @@
                 });
             }
         });
-        // options trigger
         document.querySelectorAll('.options-trigger').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -546,7 +560,6 @@
                 menu.classList.toggle('show');
             });
         });
-        // action items
         document.querySelectorAll('.action-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -557,12 +570,6 @@
                 if (action === 'delete') deleteChat(id);
                 document.querySelectorAll('.action-menu').forEach(m => m.classList.remove('show'));
             });
-        });
-        // close menus on outside click
-        window.addEventListener('click', (e) => {
-            if (!e.target.closest('.options-trigger') && !e.target.closest('.action-menu')) {
-                document.querySelectorAll('.action-menu').forEach(m => m.classList.remove('show'));
-            }
         });
     }
 
@@ -597,6 +604,7 @@
             saveToLocal();
             renderSidebar();
             renderMessages();
+            updateTitleVisibility();
         }
     }
     function switchChat(chatId) {
@@ -604,6 +612,9 @@
         renderMessages();
         renderSidebar();
         updateTitleVisibility();
+        // If there are messages, background becomes solid; if empty, revert to aurora
+        if (conversations[currentChatId]?.messages.length > 0) setSolidBackground(true);
+        else setSolidBackground(false);
     }
     function updateTitleVisibility() {
         const title = document.getElementById('welcomeTitle');
@@ -611,33 +622,12 @@
         if (conversations[currentChatId]?.messages.length > 0) {
             title.classList.add('hidden-title');
             chatContainer.style.display = 'flex';
+            setSolidBackground(true);
         } else {
             title.classList.remove('hidden-title');
             chatContainer.style.display = 'none';
+            setSolidBackground(false);
         }
-    }
-
-    // Render messages in main area
-    function renderMessages() {
-        const container = document.getElementById('chatMessages');
-        if (!container || !conversations[currentChatId]) return;
-        const msgs = conversations[currentChatId].messages;
-        container.innerHTML = '';
-        if (msgs.length === 0) {
-            container.style.display = 'none';
-            document.getElementById('welcomeTitle').classList.remove('hidden-title');
-            return;
-        }
-        container.style.display = 'flex';
-        document.getElementById('welcomeTitle').classList.add('hidden-title');
-        msgs.forEach(msg => {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${msg.role}`;
-            msgDiv.innerHTML = `<div class="bubble">${formatMessage(msg.content)}</div>
-                                <div class="message-meta">${msg.timestamp || getTimestamp()}</div>`;
-            container.appendChild(msgDiv);
-        });
-        container.scrollTop = container.scrollHeight;
     }
 
     function formatMessage(text) {
@@ -649,7 +639,30 @@
         return parsed;
     }
 
-    // Send message API
+    function renderMessages() {
+        const container = document.getElementById('chatMessages');
+        if (!container || !conversations[currentChatId]) return;
+        const msgs = conversations[currentChatId].messages;
+        container.innerHTML = '';
+        if (msgs.length === 0) {
+            container.style.display = 'none';
+            document.getElementById('welcomeTitle').classList.remove('hidden-title');
+            setSolidBackground(false);
+            return;
+        }
+        container.style.display = 'flex';
+        document.getElementById('welcomeTitle').classList.add('hidden-title');
+        setSolidBackground(true);
+        msgs.forEach(msg => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${msg.role}`;
+            msgDiv.innerHTML = `<div class="bubble">${formatMessage(msg.content)}</div>
+                                <div class="message-meta">${msg.timestamp || getTimestamp()}</div>`;
+            container.appendChild(msgDiv);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
     async function sendMessage() {
         if (isLoading) return;
         const textarea = document.getElementById('messageInput');
@@ -672,6 +685,7 @@
         isLoading = true;
         abortController = new AbortController();
         showTypingIndicator();
+        setSolidBackground(true);
 
         const apiMessages = chat.messages.map(m => ({ role: m.role, content: m.content }));
         try {
@@ -726,9 +740,9 @@
         updateTitleVisibility();
         document.getElementById('messageInput').value = '';
         document.getElementById('sendBtn').classList.remove('active');
+        setSolidBackground(false);
     }
 
-    // Voice input
     function startVoice() {
         if (!('webkitSpeechRecognition' in window)) return alert('Voice input not supported');
         const recognition = new webkitSpeechRecognition();
